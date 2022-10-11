@@ -1,0 +1,66 @@
+plugins {
+    id 'groovy'
+    id 'application'
+}
+
+ext.groovyVersion = "4.0.5"
+ext.eclipseCollectVersion = "11.1.0"
+ext.nd4jVersion = "0.9.1"
+
+repositories {
+    mavenCentral()
+//    mavenLocal()
+}
+
+dependencies {
+    implementation "org.apache.groovy:groovy:$groovyVersion"
+    implementation "org.apache.groovy:groovy-datetime:$groovyVersion"
+    implementation "org.apache.groovy:groovy-ginq:$groovyVersion"
+    implementation "org.apache.groovy:groovy-macro:$groovyVersion"
+    implementation "org.eclipse.collections:eclipse-collections-api:$eclipseCollectVersion"
+    implementation "org.eclipse.collections:eclipse-collections:$eclipseCollectVersion"
+    implementation fileTree(dir: 'lib', include: 'CatRecognizer-1.0-SNAPSHOT.jar')
+    implementation("org.nd4j:nd4j-api:$nd4jVersion") {
+        exclude(group: 'com.github.oshi')
+        exclude(group: 'org.projectlombok', module: 'lombok')
+    }
+    runtimeOnly("org.nd4j:nd4j-native-platform:$nd4jVersion") {
+        exclude(group: 'org.projectlombok', module: 'lombok')
+    }
+    runtimeOnly "org.slf4j:slf4j-simple:2.0.3"
+    implementation("org.deeplearning4j:deeplearning4j-core:$nd4jVersion") {
+        exclude(group: 'com.github.jai-imageio')
+        exclude(group: 'com.github.oshi')
+        exclude(group: 'org.projectlombok', module: 'lombok')
+        exclude(group: 'org.datavec', module: 'datavec-data-image')
+        exclude(group: 'org.deeplearning4j', module: 'deeplearning4j-ui-components')
+        exclude(group: 'org.deeplearning4j', module: 'deeplearning4j-modelimport')
+    }
+    implementation("org.deeplearning4j:deeplearning4j-zoo:$nd4jVersion") {
+        exclude(group: 'org.projectlombok', module: 'lombok')
+    }
+    implementation("org.datavec:datavec-data-image:$nd4jVersion") {
+        exclude(group: 'org.projectlombok', module: 'lombok')
+    }
+
+//    testImplementation "org.apache.groovy:groovy-test-junit5:$groovyVersion"
+//    testImplementation "org.eclipse.collections:eclipse-collections-testutils:$eclipseCollectVersion"
+}
+
+group = 'org.apache.groovy'
+version = '1.0.0-SNAPSHOT'
+description = 'Eclipse Kata Groovy Solutions'
+
+tasks.withType(GroovyCompile).configureEach {
+    options.encoding = 'UTF-8'
+    groovyOptions.forkOptions.jvmArgs += ['-Dgroovy.extension.disable=collect,countBy']
+}
+
+application {
+    mainClass = 'pets'
+}
+
+tasks.named('run').configure {
+    description = "Run 'pets' as a JVM application/Groovy script"
+    jvmArgs += ['-Dgroovy.extension.disable=collect,countBy']
+}
